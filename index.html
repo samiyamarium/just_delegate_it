@@ -232,7 +232,7 @@
             background: rgba(255, 255, 255, 0.02);
         }
 
-        /* Images / Figures Section */
+        /* Images / Figures Section with Zoom */
         .figures-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -257,6 +257,23 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            cursor: zoom-in;
+        }
+
+        .figure-img-wrapper::after {
+            content: '🔍 Click to Zoom';
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(18, 16, 19, 0.8);
+            color: var(--accent-pink);
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            border: 1px solid var(--border-pink);
+            pointer-events: none;
+            transition: opacity 0.2s;
         }
 
         .figure-card img {
@@ -282,6 +299,72 @@
             display: block;
             margin-bottom: 0.3rem;
             font-size: 0.95rem;
+        }
+
+        /* Image Lightbox Modal */
+        .lightbox-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 8, 11, 0.92);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 2rem;
+            cursor: zoom-out;
+        }
+
+        .lightbox-container {
+            max-width: 90vw;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            cursor: default;
+        }
+
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 75vh;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px solid var(--border-pink);
+            box-shadow: 0 0 30px rgba(244, 180, 214, 0.25);
+        }
+
+        .lightbox-caption {
+            margin-top: 1rem;
+            color: var(--silver-light);
+            text-align: center;
+            font-size: 1rem;
+            max-width: 700px;
+        }
+
+        .lightbox-caption strong {
+            color: var(--accent-pink);
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: -2.5rem;
+            right: 0;
+            background: none;
+            border: none;
+            color: var(--silver-light);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .lightbox-close:hover {
+            color: var(--accent-pink);
         }
 
         /* Modal / Popup Styling */
@@ -658,11 +741,11 @@
     </div>
 
     <!-- Extracted Figures Section -->
-    <h2 class="section-title">Course Figures & Diagrams</h2>
+    <h2 class="section-title">Course Figures & Diagrams (Click to Zoom)</h2>
     <div class="figures-grid">
         
         <div class="figure-card">
-            <div class="figure-img-wrapper">
+            <div class="figure-img-wrapper" onclick="openLightbox('https://agentfactory.panaversity.org/assets/images/fig-01-delegation-loop-9a53cb46b974b6bcdc50cdae9d03c1fa.webp', 'Figure 1: The Delegation Loop', '6 steps: Define, Delegate, Observe, Intervene, Verify, Accept. AI owns the middle. You own both ends.')">
                 <img src="https://agentfactory.panaversity.org/assets/images/fig-01-delegation-loop-9a53cb46b974b6bcdc50cdae9d03c1fa.webp" alt="The Delegation Loop">
             </div>
             <div class="figure-caption">
@@ -672,7 +755,7 @@
         </div>
 
         <div class="figure-card">
-            <div class="figure-img-wrapper">
+            <div class="figure-img-wrapper" onclick="openLightbox('https://agentfactory.panaversity.org/assets/images/fig-02-delegation-brief-3fb6465b706708d8841dd3b28805d108.webp', 'Figure 2: The Delegation Brief', 'Six questions: Outcome, Context, Constraints, Authority, Deliverable, Verification. A thinking tool, not a form.')">
                 <img src="https://agentfactory.panaversity.org/assets/images/fig-02-delegation-brief-3fb6465b706708d8841dd3b28805d108.webp" alt="The Delegation Brief">
             </div>
             <div class="figure-caption">
@@ -682,7 +765,7 @@
         </div>
 
         <div class="figure-card">
-            <div class="figure-img-wrapper">
+            <div class="figure-img-wrapper" onclick="openLightbox('https://agentfactory.panaversity.org/assets/images/fig-03-need-then-tool-e05d0d8c30c2960e1d378effb3de67cf.webp', 'Figure 3: Need First, Then Tool', 'Controls on screen are introduced only when a specific job requirement asks for them.')">
                 <img src="https://agentfactory.panaversity.org/assets/images/fig-03-need-then-tool-e05d0d8c30c2960e1d378effb3de67cf.webp" alt="Need First Then Tool">
             </div>
             <div class="figure-caption">
@@ -692,7 +775,7 @@
         </div>
 
         <div class="figure-card">
-            <div class="figure-img-wrapper">
+            <div class="figure-img-wrapper" onclick="openLightbox('https://agentfactory.panaversity.org/assets/images/fig-04-verify-opened-84c75c17e833c6318f1f5efa36ee1115.webp', 'Figure 4: Verify Opened', 'Four sub-steps: Identify, Trace, Challenge, Decide. Ends in Accept, Correct, Investigate, or Reject.')">
                 <img src="https://agentfactory.panaversity.org/assets/images/fig-04-verify-opened-84c75c17e833c6318f1f5efa36ee1115.webp" alt="Verify Opened">
             </div>
             <div class="figure-caption">
@@ -701,6 +784,15 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- Image Lightbox Modal -->
+    <div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox(event)">
+        <div class="lightbox-container" onclick="event.stopPropagation()">
+            <button class="lightbox-close" onclick="closeLightboxDirect()">&times;</button>
+            <img src="" alt="Enlarged Diagram" class="lightbox-img" id="lightboxImg">
+            <div class="lightbox-caption" id="lightboxCaption"></div>
+        </div>
     </div>
 
     <!-- Glossary Section -->
@@ -925,6 +1017,31 @@
         function closeModalDirect() {
             document.getElementById('modalOverlay').style.display = 'none';
         }
+
+        /* Lightbox Functionality */
+        function openLightbox(imgSrc, title, caption) {
+            document.getElementById('lightboxImg').src = imgSrc;
+            document.getElementById('lightboxCaption').innerHTML = `<strong>${title}</strong>${caption}`;
+            document.getElementById('lightboxOverlay').style.display = 'flex';
+        }
+
+        function closeLightbox(event) {
+            if (event.target.id === 'lightboxOverlay') {
+                document.getElementById('lightboxOverlay').style.display = 'none';
+            }
+        }
+
+        function closeLightboxDirect() {
+            document.getElementById('lightboxOverlay').style.display = 'none';
+        }
+
+        /* Keyboard Accessibility to close modals */
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModalDirect();
+                closeLightboxDirect();
+            }
+        });
     </script>
 </body>
 </html>
